@@ -1,0 +1,42 @@
+services:
+
+  oracle:
+    image: gvenzl/oracle-free:23-slim
+    container_name: mobilidade-oracle
+    environment:
+      ORACLE_PASSWORD: ${ORACLE_PASSWORD:-OracleSys123}
+      # Cria o usuario/schema da aplicacao no banco FREEPDB1
+      APP_USER: ${DB_USERNAME:-mobilidade}
+      APP_USER_PASSWORD: ${DB_PASSWORD:-mobilidade123}
+    ports:
+      - "1521:1521"
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+    healthcheck:
+      # Script incluso na imagem: so fica "healthy" quando o banco aceita conexoes
+      test: ["CMD", "healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+
+  api:
+    build: .
+    container_name: mobilidade-api
+    depends_on:
+      oracle:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:oracle:thin:@oracle:1521/FREEPDB1
+      DB_USERNAME: ${DB_USERNAME:-mobilidade}
+      DB_PASSWORD: ${DB_PASSWORD:-mobilidade123}
+      JWT_SECRET: ${JWT_SECRET:-bW9iaWxpZGFkZS1zdXN0ZW50YXZlbC1jaGF2ZS1zZWNyZXRhLWRlLWRlc2Vudm9sdmltZW50by0yMDI2}
+      JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS:-7200000}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@mobilidade.com}
+      ADMIN_SENHA: ${ADMIN_SENHA:-Admin@123}
+    ports:
+      - "8080:8080"
+    restart: on-failure
+
+volumes:
+  oracle-data:

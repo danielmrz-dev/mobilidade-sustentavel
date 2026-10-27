@@ -1,0 +1,59 @@
+server:
+  port: ${SERVER_PORT:8080}
+  error:
+    include-message: always
+
+spring:
+  application:
+    name: mobilidade-sustentavel-api
+
+  datasource:
+    url: ${DB_URL:jdbc:oracle:thin:@localhost:1521/FREEPDB1}
+    username: ${DB_USERNAME:mobilidade}
+    password: ${DB_PASSWORD:mobilidade123}
+    driver-class-name: oracle.jdbc.OracleDriver
+    hikari:
+      maximum-pool-size: 5
+      connection-timeout: 30000
+
+  jpa:
+    # Quem cria e altera o schema e o Flyway. O Hibernate nao mexe nas tabelas.
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+    show-sql: ${SHOW_SQL:false}
+    properties:
+      hibernate:
+        format_sql: true
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    # Permite rodar em um schema que ja tenha outros objetos (ex.: Oracle da faculdade)
+    baseline-on-migrate: true
+    baseline-version: 0
+
+  jackson:
+    time-zone: America/Sao_Paulo
+    serialization:
+      write-dates-as-timestamps: false
+
+jwt:
+  # Chave em Base64 com pelo menos 256 bits. Em producao, sempre sobrescreva via variavel de ambiente.
+  secret: ${JWT_SECRET:bW9iaWxpZGFkZS1zdXN0ZW50YXZlbC1jaGF2ZS1zZWNyZXRhLWRlLWRlc2Vudm9sdmltZW50by0yMDI2}
+  expiration-ms: ${JWT_EXPIRATION_MS:7200000}
+
+mobilidade:
+  # Pontos concedidos por kg de CO2 evitado em cada deslocamento
+  pontos-por-kg-co2: ${PONTOS_POR_KG_CO2:10}
+  # Fator usado quando nao existe modal de referencia (CARRO_COMBUSTAO) ativo no banco
+  fator-referencia-padrao-g-km: ${FATOR_REFERENCIA_PADRAO:150}
+  admin:
+    nome: ${ADMIN_NOME:Administrador}
+    email: ${ADMIN_EMAIL:admin@mobilidade.com}
+    senha: ${ADMIN_SENHA:Admin@123}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
