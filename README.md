@@ -17,9 +17,11 @@ e o **ranking** dos colaboradores.
 
 | Nome | RM |
 |---|---|
-| | |
-| | |
-| | |
+| Beatriz Cavalcanti | 568493 |
+| Bruna Sangoleti | 567014 |
+| Daniel Mariz | 566721 |
+| Douglas Cristian | 566847 |
+| Wesley Santos | 567925 |
 
 ## Tecnologias
 
